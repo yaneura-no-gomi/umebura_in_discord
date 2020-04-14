@@ -23,10 +23,6 @@ def display_stages(stages):
 def next_step_check(m):
     return (m.content in ['/ok', '/next'])
 
-def starter_stage_check(m):
-    return (m.content in [str(i) for i in range(5)])
-
-
 def next_step(step, reply):
     if reply.content == '/ok' or reply.content == '/next':
         return step+1
@@ -60,44 +56,61 @@ def main(args):
             await message.channel.send('はじめていきましょーーーー！！（キシル）')
             step = 0 # 選択ステップ
 
-            # step0: ファイター選択
+            # ファイター選択
             await message.channel.send('ファイターを選択してください')
             reply = await client.wait_for("message", check=next_step_check)
             print('step:',step)
             
-            # step1: じゃんけん
+            # じゃんけん
             step = next_step(step, reply)
             await message.channel.send('じゃんけんを行ってください: さいしょはグー、じゃんけん…')
             reply = await client.wait_for("message", check=next_step_check)
             print('step:',step)
             
-            # step2: ステージ選択1
+            # ステージ選択1
             step = next_step(step, reply)
             stage_idx = list(range(5))
+            def stage_check(m):
+                return (m.content in [str(i) for i in stage_idx])
+
             stages = [all_stages[i] for i in stage_idx]
             await message.channel.send('勝者は以下の5ステージから拒否するステージを1つ選択し、番号を入力してください')
             await message.channel.send(display_stages(stages))
-            reply = await client.wait_for("message", check=starter_stage_check)
-            await message.channel.send('{} が拒否されました'.format(stages[int(reply.content)]))
+            reply = await client.wait_for("message", check=stage_check)
+            await message.channel.send('{} が拒否されました'.format(all_stages[int(reply.content)]))
             print('step:',step)
 
-            # step3: ステージ選択2
-            step = next_step(step, reply)
+            # ステージ選択2
             stage_idx, stages = make_stage_list(stage_idx, reply)
+            def stage_check(m):
+                return (m.content in [str(i) for i in stage_idx])
+
             await message.channel.send('敗者は以下の4ステージから拒否するステージを2つ選択してください')
-
-
             await message.channel.send(display_stages(stages))
             await message.channel.send('拒否するステージを選択(1つ目)')
-            reply = await client.wait_for("message", check=starter_stage_check)
-            await message.channel.send('{} が拒否されました'.format(stages[int(reply.content)]))
+            reply = await client.wait_for("message", check=stage_check)
+            await message.channel.send('{} が拒否されました'.format(all_stages[int(reply.content)]))
 
+            # ステージ選択3
             stage_idx, stages = make_stage_list(stage_idx, reply)
+            def stage_check(m):
+                return (m.content in [str(i) for i in stage_idx])
+
             await message.channel.send('残りステージ')
             await message.channel.send(display_stages(stages))
             await message.channel.send('拒否するステージを選択(2つ目)')
-            reply = await client.wait_for("message", check=starter_stage_check)
-            await message.channel.send('{} が拒否されました'.format(stages[int(reply.content)]))
+            reply = await client.wait_for("message", check=stage_check)
+            await message.channel.send('{} が拒否されました'.format(all_stages[int(reply.content)]))
+
+            # ステージ選択4
+            stage_idx, stages = make_stage_list(stage_idx, reply)
+            def stage_check(m):
+                return (m.content in [str(i) for i in stage_idx])
+            await message.channel.send('勝者は以下のステージからステージを1つ選択してください')
+            await message.channel.send(display_stages(stages))
+            reply = await client.wait_for("message", check=stage_check)
+            await message.channel.send('ステージは{}に決定しました'.format(all_stages[int(reply.content)]))
+            await message.channel.send('試合を開始してください！')
             
 
     client.run(TOKEN)    
