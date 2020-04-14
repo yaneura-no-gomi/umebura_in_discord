@@ -38,6 +38,9 @@ def main(args):
     @client.event
     async def on_ready():
         print('Login succeeded')
+        
+        # channel = client.get_channel(args.channel)
+        # await channel.send(smash)
 
     @client.event
     async def on_message(message):
@@ -111,6 +114,50 @@ def main(args):
             reply = await client.wait_for("message", check=stage_check)
             await message.channel.send('ステージは{}に決定しました'.format(all_stages[int(reply.content)]))
             await message.channel.send('試合を開始してください！')
+        
+        if message.content == '/next':
+            await message.channel.send('次の試合をはじめていきましょーーー！！（キシル）')
+            # ステージ選択1
+            stage_idx = list(range(7))
+            stages = [all_stages[i] for i in stage_idx]
+            def stage_check(m):
+                return (m.content in [str(i) for i in stage_idx])
+
+            await message.channel.send('勝者は以下の7ステージから拒否するステージを2つ選択してください')
+            await message.channel.send(display_stages(stages))
+            await message.channel.send('拒否するステージを選択(1つ目)')
+            reply = await client.wait_for("message", check=stage_check)
+            await message.channel.send('{} が拒否されました'.format(all_stages[int(reply.content)]))
+
+            # ステージ選択2
+            stage_idx, stages = make_stage_list(stage_idx, reply)
+            def stage_check(m):
+                return (m.content in [str(i) for i in stage_idx])
+
+            await message.channel.send('残りステージ')
+            await message.channel.send(display_stages(stages))
+            await message.channel.send('拒否するステージを選択(2つ目)')
+            reply = await client.wait_for("message", check=stage_check)
+            await message.channel.send('{} が拒否されました'.format(all_stages[int(reply.content)]))
+
+            # ステージ選択3
+            stage_idx, stages = make_stage_list(stage_idx, reply)
+            def stage_check(m):
+                return (m.content in [str(i) for i in stage_idx])
+            await message.channel.send('勝者は以下のステージからステージを1つ選択してください')
+            await message.channel.send(display_stages(stages))
+            reply = await client.wait_for("message", check=stage_check)
+            await message.channel.send('ステージは{}に決定しました'.format(all_stages[int(reply.content)]))
+
+            # キャラクター選択
+            # ファイター選択
+            await message.channel.send('勝者はファイターを選択してください')
+            reply = await client.wait_for("message", check=next_step_check)
+            
+            await message.channel.send('敗者はファイターを選択してください')
+            reply = await client.wait_for("message", check=next_step_check)
+
+            await message.channel.send('準備が整いました。試合を開始してください！')
             
 
     client.run(TOKEN)    
@@ -127,6 +174,14 @@ if __name__ == "__main__":
         '-t',
         help ='bot token',
         type=str,
+        required=True
+    )
+
+    parser.add_argument(
+        '--channel',
+        '-c',
+        help ='channel ID',
+        type=int,
         required=True
     )
 
