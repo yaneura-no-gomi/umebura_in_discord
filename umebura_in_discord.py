@@ -198,7 +198,6 @@ if __name__ == "__main__":
         '-c',
         help ='channel ID',
         type=int,
-        required=True
     )
 
     args = parser.parse_args()
