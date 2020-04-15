@@ -1,9 +1,16 @@
 # インストールした discord.py を読み込む
-import discord
 import argparse
+import asyncio
+import os
+import sys
+import time
+
+import discord
+from discord.ext import commands, tasks
 from termcolor import cprint
 
 all_stages = ['0:戦場','1:終点','2:ポケスタ2','3:すま村','4:村と街','5:ライラットクルーズ','6:カロスポケモンリーグ']
+
 
 def make_stage_list(stage_idx,reply):
     print('now_stage:', stage_idx)
@@ -44,6 +51,7 @@ def main(args):
 
     @client.event
     async def on_message(message):
+
         if message.author.bot:
             return
 
@@ -54,8 +62,15 @@ def main(args):
             await message.channel.send('GG')
             exit()
         
+        if message.content == '/reset':
+            # await message.channel.send('Now restarting...')
+            time.sleep(0.5)
+            python = sys.executable
+            os.execl(python, python, *sys.argv)
+
         # 1戦目
-        if message.content == '/start' or message.content=='/reset':
+        if message.content == '/start':
+
             await message.channel.send('はじめていきましょーーーー！！（キシル）')
             step = 0 # 選択ステップ
 
@@ -109,13 +124,13 @@ def main(args):
             stage_idx, stages = make_stage_list(stage_idx, reply)
             def stage_check(m):
                 return (m.content in [str(i) for i in stage_idx])
-            await message.channel.send('勝者は以下のステージからステージを1つ選択してください')
+            await message.channel.send('敗者は以下のステージからステージを1つ選択してください')
             await message.channel.send(display_stages(stages))
             reply = await client.wait_for("message", check=stage_check)
             await message.channel.send('ステージは{}に決定しました'.format(all_stages[int(reply.content)]))
             await message.channel.send('試合を開始してください！')
         
-        if message.content == '/next':
+        elif message.content == '/next':
             await message.channel.send('次の試合をはじめていきましょーーー！！（キシル）')
             # ステージ選択1
             stage_idx = list(range(7))
@@ -158,9 +173,10 @@ def main(args):
             reply = await client.wait_for("message", check=next_step_check)
 
             await message.channel.send('準備が整いました。試合を開始してください！')
-            
+    
 
-    client.run(TOKEN)    
+
+    client.run(TOKEN)
 
 if __name__ == "__main__":
     cprint("-" * 50, "yellow")
@@ -187,4 +203,3 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     main(args)
-    
