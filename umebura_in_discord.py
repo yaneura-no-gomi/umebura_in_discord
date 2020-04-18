@@ -124,7 +124,7 @@ def main(args):
             stage_idx, stages = make_stage_list(stage_idx, reply)
             def stage_check(m):
                 return (m.content in [str(i) for i in stage_idx])
-            await message.channel.send('敗者は以下のステージからステージを1つ選択してください')
+            await message.channel.send('勝者は以下のステージからステージを1つ選択してください')
             await message.channel.send(display_stages(stages))
             reply = await client.wait_for("message", check=stage_check)
             await message.channel.send('ステージは{}に決定しました'.format(all_stages[int(reply.content)]))
@@ -159,7 +159,7 @@ def main(args):
             stage_idx, stages = make_stage_list(stage_idx, reply)
             def stage_check(m):
                 return (m.content in [str(i) for i in stage_idx])
-            await message.channel.send('勝者は以下のステージからステージを1つ選択してください')
+            await message.channel.send('敗者は以下のステージからステージを1つ選択してください')
             await message.channel.send(display_stages(stages))
             reply = await client.wait_for("message", check=stage_check)
             await message.channel.send('ステージは{}に決定しました'.format(all_stages[int(reply.content)]))
