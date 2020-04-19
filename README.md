@@ -12,7 +12,7 @@
 ## 使い方
 DiscordへのBotの導入は割愛します。以下のコマンドでBotが起動します。
 ```
-python umebura_in_discord -t [your token]
+python umebura_in_discord.py -t [your token]
 ```
 
 ### 1試合目
